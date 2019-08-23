@@ -1,0 +1,368 @@
+import RPi.GPIO as io
+from time import sleep
+io.setmode(io.BOARD)
+g1=[3,5,7,11]
+s1=[8,10,12,16]
+g2=[15,19,21,23]
+s2=[18,22,24,26]
+g3=[33,35]
+s3=[36,38,40]
+io.setup(s1,io.IN)
+io.setup(g1,io.OUT)
+io.setup(s2,io.IN)
+io.setup(g2,io.OUT)
+io.setup(s3,io.IN)
+io.setup(g3,io.OUT)
+A=0
+B=0
+C=1
+while (A!=9):
+       A=input("Enter source Number(press 9 to exit)\n")
+       B=input("Enter Parking Bay Number\n")
+       K=1
+       while A==1 and B==1:
+               print("Route A \n Source= 1\nVia Junction A - B  \nParking Bay = 1")
+               while(K>0):
+                       io.output(g1[0],0)
+                       io.output(g1[1],1)
+                       io.output(g1[2],0)
+                       io.output(g1[3],0)
+                       io.output(g2[0],0)
+                       io.output(g2[1],0)
+                       io.output(g2[2],0)
+                       io.output(g2[3],1)
+                       while (io.input(s1[1])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g1[0],0)
+                               io.output(g1[1],0)
+                               io.output(g1[2],1)
+                               io.output(g1[3],0)
+                               while (io.input(s1[3])==1):
+                                   sleep(2)
+                               sleep(2)
+                               io.output(g2[0],0)
+                               io.output(g2[1],0)
+                               io.output(g2[2],0)
+                               io.output(g2[3],1)
+                       while (io.input(s2[0])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g2[0],1)
+                               io.output(g2[1],0)
+                               io.output(g2[2],0)
+                               io.output(g2[3],0)
+                               while (io.input(s2[2])==1):
+                                   sleep(2)
+                               sleep(2)
+                       K=K-0.1
+       io.output(g1[0],0)
+       io.output(g1[1],0)
+       io.output(g1[2],0)
+       io.output(g1[3],0)
+       io.output(g2[0],0)
+       io.output(g2[1],0)
+       io.output(g2[2],0)
+       io.output(g2[3],0)
+       io.output(g3[0],0)
+       io.output(g3[1],0)
+       while A==1 and B==2:
+           while C==1:
+               print("Route B1 \n Source= 1\nVia Junction A - B - C \nParking Bay = 2")
+               while(K>0):
+                       io.output(g1[0],0)
+                       io.output(g1[1],1)
+                       io.output(g1[2],0)
+                       io.output(g1[3],0)
+                       io.output(g2[0],0)
+                       io.output(g2[1],0)
+                       io.output(g2[2],1)
+                       io.output(g2[3],0)
+                       while (io.input(s1[1])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g1[0],0)
+                               io.output(g1[1],1)
+                               io.output(g1[2],0)
+                               io.output(g1[3],0)
+                               while (io.input(s1[2])==1 ):
+                                   sleep(2)
+                               sleep(2)
+                       io.output(g2[0],0)
+                       io.output(g2[1],0)
+                       io.output(g2[2],1)
+                       io.output(g2[3],0)
+                       while (io.input(s2[0])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g2[0],0)
+                               io.output(g2[1],1)
+                               io.output(g2[2],0)
+                               io.output(g2[3],0)
+                               while (io.input(s2[3])==1 ):
+                                   sleep(2)
+                               sleep(2)
+                       io.output(g3[0],1)
+                       io.output(g3[1],0)
+                       while (io.input(s3[0])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g3[0],0)
+                               io.output(g3[1],1)
+                               while (io.input(s3[2])==1 ):
+                                   sleep(2)
+                               sleep(2)
+                       io.output(g3[0],1)
+                       io.output(g3[1],0)
+                       K=K-0.1     
+           while C==2:
+               print("Route 2 \n Source= 1\nVia Junction A - C  \nParking Bay = 2")
+               while(K>0):
+                       io.output(g1[0],1)
+                       io.output(g1[1],0)
+                       io.output(g1[2],0)
+                       io.output(g1[3],0)
+                       io.output(g3[0],1)
+                       io.output(g3[1],0)
+                       while (io.input(s1[1])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g1[0],0)
+                               io.output(g1[1],0)
+                               io.output(g1[2],0)
+                               io.output(g1[3],1)
+                               while (io.input(s1[3])==1):
+                                   sleep(2)
+                               sleep(2)
+                       io.output(g3[0],1)
+                       io.output(g3[1],0)
+                       while (io.input(s3[1])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g3[0],0)
+                               io.output(g3[1],1)
+                               while (io.input(s3[2])==1):
+                                   sleep(2)           
+                               sleep(2)
+                       io.output(g3[0],1)
+                       io.output(g3[1],0)
+                       K=K-0.1     
+       io.output(g1[0],0)
+       io.output(g1[1],0)
+       io.output(g1[2],0)
+       io.output(g1[3],0)
+       io.output(g2[0],0)
+       io.output(g2[1],0)
+       io.output(g2[2],0)
+       io.output(g2[3],0)
+       io.output(g3[0],0)
+       io.output(g3[1],0)
+       while A==2 and B==1:
+               print("Route C \n Source= 2\nVia Junction A - B \nParking Bay = 1")
+               while(K>0):
+                       io.output(g1[0],0)
+                       io.output(g1[1],0)
+                       io.output(g1[2],0)
+                       io.output(g1[3],1)
+                       io.output(g2[0],0)
+                       io.output(g2[1],0)
+                       io.output(g2[2],0)
+                       io.output(g2[3],1)
+                       while (io.input(s1[0])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g1[0],1)
+                               io.output(g1[1],0)
+                               io.output(g1[2],0)
+                               io.output(g1[3],0)
+                               while ( io.input(s1[2])==1):
+                                   sleep(2)
+                               sleep(2)   
+                       io.output(g2[0],0)
+                       io.output(g2[1],0)
+                       io.output(g2[2],0)
+                       io.output(g2[3],1)
+                       while (io.input(s2[0])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g2[0],1)
+                               io.output(g2[1],0)
+                               io.output(g2[2],0)
+                               io.output(g2[3],0)
+                               while (io.input(s2[2])==1 ):
+                                   sleep(2)
+                               sleep(2)   
+                       K=K-0.1      
+       io.output(g1[0],0)
+       io.output(g1[1],0)
+       io.output(g1[2],0)
+       io.output(g1[3],0)
+       io.output(g2[0],0)
+       io.output(g2[1],0)
+       io.output(g2[2],0)
+       io.output(g2[3],0)
+       io.output(g3[0],0)
+       io.output(g3[1],0)
+       while A==2 and B==2:
+           while C==1:
+               print("Route D1 \n Source= 1\nVia Junction A - B - C \nParking Bay = 2")
+               while(K>0):
+                       io.output(g1[0],0)
+                       io.output(g1[1],0)
+                       io.output(g1[2],0)
+                       io.output(g1[3],1)
+                       io.output(g2[0],0)
+                       io.output(g2[1],0)
+                       io.output(g2[2],1)
+                       io.output(g2[3],0)
+                       while (io.input(s1[0])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g1[0],1)
+                               io.output(g1[1],0)
+                               io.output(g1[2],0)
+                               io.output(g1[3],0)
+                               while (io.input(s1[2])==1 ):
+                                   sleep(2)
+                               sleep(2)
+                       io.output(g2[0],0)
+                       io.output(g2[1],0)
+                       io.output(g2[2],)
+                       io.output(g2[3],0)
+                       while (io.input(s2[0])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g2[0],0)
+                               io.output(g2[1],1)
+                               io.output(g2[2],0)
+                               io.output(g2[3],0)
+                               while (io.input(s2[3])==1 ):
+                                   sleep(2)
+                               sleep(2)
+                       io.output(g3[0],0)
+                       io.output(g3[1],1)
+                       while (io.input(s3[0])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g3[0],0)
+                               io.output(g3[1],1)
+                               while (io.input(s3[2])==1):
+                                   sleep(2)
+                               sleep(2)
+                       io.output(g3[0],0)
+                       io.output(g3[1],1)
+                       K=K-0.1     
+           while C==2:
+               print("Route D2 \n Source= 1\nVia Junction A - C  \nParking Bay = 2")
+               while(K>0):
+                       io.output(g1[0],0)
+                       io.output(g1[1],0)
+                       io.output(g1[2],1)
+                       io.output(g1[3],0)
+                       while (io.input(s1[0])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g1[0],0)
+                               io.output(g1[1],1)
+                               io.output(g1[2],0)
+                               io.output(g1[3],0)
+                               while (io.input(s1[3])==1):
+                                   sleep(2)
+                               sleep(2)
+                       io.output(g3[0],1)
+                       io.output(g3[1],0)
+                       while (io.input(s3[1])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g3[0],0)
+                               io.output(g3[1],1)
+                               while (io.input(s3[2])==1):
+                                   sleep(2)
+                               sleep(2)           
+                       io.output(g3[0],1)
+                       io.output(g3[1],0)
+                       K=K-0.1
+       io.output(g1[0],0)
+       io.output(g1[1],0)
+       io.output(g1[2],0)
+       io.output(g1[3],0)
+       io.output(g2[0],0)
+       io.output(g2[1],0)
+       io.output(g2[2],0)
+       io.output(g2[3],0)
+       io.output(g3[0],0)
+       io.output(g3[1],0)
+       while A==3 and B==1:
+               print("Route E \n Source= 3\nVia Junction B \nParking Bay = 4")
+               while(K>0):
+                       io.output(g1[0],0)
+                       io.output(g1[1],0)
+                       io.output(g1[2],0)
+                       io.output(g1[3],0)
+                       io.output(g2[0],0)
+                       io.output(g2[1],1)
+                       io.output(g2[2],0)
+                       io.output(g2[3],0)
+                       while (io.input(s2[1])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g2[0],0)
+                               io.output(g2[1],0)
+                               io.output(g2[2],1)
+                               io.output(g2[3],0)
+                               while (io.input(s2[2])==1):
+                                   sleep(2)
+                               sleep(2)
+                       io.output(g2[0],0)
+                       io.output(g2[1],1)
+                       io.output(g2[2],0)
+                       io.output(g2[3],0)
+                       K=K-0.1   
+       while A==3 and B==2:
+               print("Route F \n Source= 3\nVia Junction  B - C \nParking Bay = 1")
+               while(K>0):
+                       io.output(g1[0],0)
+                       io.output(g1[1],0)
+                       io.output(g1[2],0)
+                       io.output(g1[3],0)
+                       io.output(g2[0],0)
+                       io.output(g2[1],1)
+                       io.output(g2[2],0)
+                       io.output(g2[3],0)
+                       io.output(g3[0],0)
+                       io.output(g3[1],1)
+                       while (io.input(s2[1])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g2[0],0)
+                               io.output(g2[1],0)
+                               io.output(g2[2],1)
+                               io.output(g2[3],0)
+                               while (io.input(s2[3])==1):
+                                   sleep(2)
+                               sleep(2)
+                       io.output(g3[0],1)
+                       io.output(g3[1],0)
+                       while (io.input(s3[0])==0):
+                               print("! ! ! ! ! ! Obstruction! ! ! ! ! ! \nPlease Wait")
+                               io.output(g3[0],1)
+                               io.output(g3[1],0)
+                               while (io.input(s3[2])==1):
+                                   sleep(2)
+                               sleep(2)  
+                       io.output(g3[0],0)
+                       io.output(g3[1],1)
+                       K=K-0.1     
+       io.output(g1[0],0)
+       io.output(g1[1],0)
+       io.output(g1[2],0)
+       io.output(g1[3],0)
+       io.output(g2[0],0)
+       io.output(g2[1],0)
+       io.output(g2[2],0)
+       io.output(g2[3],0)
+       io.output(g3[0],0)
+       io.output(g3[1],0)
+       while A==9:
+               print("Exiting Program")
+               break
+       else:
+               print("! ! ! ! ! ! Invalid Input ! ! ! ! ! !\n\tPlease Standby,returning to main menu. ")
+               break
+while A==9:
+               print("Exiting Program")
+               break
+io.output(g1[0],0)
+io.output(g1[1],0)
+io.output(g1[2],0)
+io.output(g1[3],0)
+io.output(g2[0],0)
+io.output(g2[1],0)
+io.output(g2[2],0)
+io.output(g2[3],0)
+io.output(g3[0],0)
+io.output(g3[1],0)
