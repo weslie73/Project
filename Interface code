@@ -1,0 +1,548 @@
+Resources Views (Pages)
+1) index.blade.php (homepage)
+@extends('layouts.app')
+@section('content')
+<body>
+    <div class="jumbotron text-center">
+        <img src="storage\_images\ATC_tower.jpg" class="img-fluid" alt="Responsive image" width="80%" height="240"> 
+        <div class="container">
+        <h1 style="color:blue;">Welcome To Ground Aircraft Handling and Support System</h1>       
+    </div>
+    </div>
+</body>
+@endsection
+
+4) app.blade.php (application layout page)
+<!DOCTYPE html>
+<html lang="{{ app()->getLocale() }}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ config('app.name', 'Laravel') }}</title>
+    <!-- Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+</head>
+<body>
+    <body  style="color:black; font-family:verdana;">  {{-- style="font-family:verdana;" --}}
+    <div id="app">
+        @include('inc.navbar')
+        <div class="container">
+            @include('inc.messages')
+            @yield('content')
+        </div>
+    </div>
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}"></script>
+</body>
+<footer class="mastfoot mt-auto">
+    <div class="container">
+        <br><br>
+        <p>Copywrited &copy; 2018-19 Company, Inc.</p>
+    </div>
+</footer>
+</html>
+
+5) navbar.blade.php (to include in all pages)
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <div class="navbar-header">
+            <!-- Collapsed Hamburger -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <!-- Branding Image -->
+            <a class="navbar-brand" href="{{ url('/') }}">
+                {{ config('app.name', 'Laravel') }}
+            </a>
+        </div>
+        <div class="collapse navbar-collapse" id="app-navbar-collapse">
+            <!-- Left Side Of Navbar -->
+            <ul class="nav navbar-nav">
+                &nbsp;
+            </ul>
+            <ul class="nav navbar-nav">
+               <li><a href="/help">FAQ'S</a></li>
+              <li><a style="color:yellow" href="/posts">ATC-Arrivals</a></li>
+              <li><a href="/dposts">ATC-Depts</a></li>
+              <li><a href="/arrivals" style="color:yellow">A-Requests</a></li>
+              <li><a href="/depts">D-Requests</a></li>
+            </ul>
+            <!-- Right Side Of Navbar -->
+            <ul class="nav navbar-nav navbar-right">
+                <!-- Authentication Links -->
+                @if (Auth::guest())
+                    <li><a href="{{ route('login') }}"> Admin Login</a></li>
+                  @else
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            {{ Auth::user()->name }} <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/dashboard">Dashboard</a></li>
+                            <li>       <a href="{{ route('logout') }}"
+                                    onclick="event.preventDefault();
+                                              document.getElementById('logout-form').submit();">
+                                    Logout
+                                </a>
+                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    {{ csrf_field() }}
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+            </ul>
+        </div>
+    </div>
+</nav>
+
+7) login.blade.php (ATC login page)
+@extends('layouts.app')
+@section('content')
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading"> ATCT Admin Login</div>
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form" method="POST" action="{{ route('login') }}">
+                        {{ csrf_field() }}
+                        <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
+                            <div class="col-md-6">
+                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
+                                @if ($errors->has('email'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('email') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+                            <label for="password" class="col-md-4 control-label">Password</label>
+                            <div class="col-md-6">
+                                <input id="password" type="password" class="form-control" name="password" required>
+                                @if ($errors->has('password'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('password') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+10 a) posts/  index.blade.php (display all arrival clearance records)
+@extends('layouts.app')
+@section('content')
+<a href="/posts/create" class="btn btn-primary btn-lg btn-block">Create Aircraft Clearance Record</a>
+    <br><br>
+    <h1> Aircraft Arrival Clearance Records</h1>
+    @if(count($posts) > 0)
+        @foreach($posts as $post)
+            <div class="well">
+                <div class="row">                   
+                    <div class="col-md-4 col-sm-4">
+                          <h3> <a href="/posts/{{$post->id}}">{{$post->flightno}}</a></h3>
+                        <small>Entered on {{$post->created_at}} by {{$post->user->name}} (ATCT)</small>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+        {{$posts->links()}}
+    @else
+        <p>No Aircraft Clearance Records Found</p>
+    @endif
+@endsection
+
+10 b) posts/ create.blade.php (create arrival clearance records by ATC)
+@extends('layouts.app')
+@section('content')
+    <h1>Create Aircraft Arrival Clearance Record</h1>
+    {!! Form::open(['action' => 'PostsController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data']) !!}
+        <div class="form-group">
+            {{Form::label('flightno', 'Flight No.')}}
+            {{Form::text('flightno', '', ['class' => 'form-control', 'placeholder' => 'Flight no. format (eg:KL722)'])}}
+        </div>      
+        <div class="form-group">
+            {{Form::label('flighttype', 'Flight Type :')}}
+            {{Form::select('flighttype', ['Small Aircraft' => 'Small Aircraft', 'Medium Range Aircraft' => 'Medium Range Aircraft','Large Aircraft' => 'Large Aircraft', 'Private Aircraft' => 'Private Aircraft','Helicopter' => 'Helicopter', 'Cargo' => 'Cargo'], null,['class' => 'form-control', 'placeholder' =>'Select Aircraft Type'])}}
+        </div> 
+        <div class="form-group">
+            {{Form::label('toa', 'Time of Arrival : (Hours(24) : Minutes : Seconds)')}}
+            {{Form::time('toa', Carbon\Carbon::now()->timezone('Asia/Calcutta')->format('H:i:s'),['class' => 'form-control', 'placeholder' =>'Arrival Time'])}}
+        </div>
+        <div class="form-group">
+            {{Form::label('doa', 'Date of Arrival : (Date - Month - Year)')}}
+            {{Form::date('doa', \Carbon\Carbon::now()->timezone('Asia/Calcutta')->format('d-m-Y'),['class' => 'form-control', 'placeholder' =>'Arrival Date'])}}
+        </div>
+        <div class="form-group">
+            {{Form::label('runway', 'Runway ( 12/30 ; L/R ) ')}}
+            {{Form::select('runway', ['L' => 'L', 'R' => 'R'], null,['class' => 'form-control', 'placeholder' =>'Select Runway and direction'])}}
+        </div> 
+        <div class="form-group">
+            {{Form::label('route', 'Route ')}}
+            {{Form::select('route', ['A' => 'A', 'B' => 'B', 'C' => 'C','D' => 'D'], null,['class' => 'form-control', 'placeholder' =>'Select the Route to travel'])}}
+        </div>
+        <div class="form-group">
+            {{Form::label('parking', 'Parking Space: ')}}
+            {{Form::select('parking', ['P1' => 'P1', 'P2' => 'P2', 'P3' => 'P3','P4' => 'P4', 'P5' => 'P5'], null,['class' => 'form-control', 'placeholder' =>'Select the Parking Space'])}}
+        </div> 
+        {{Form::submit('Submit', ['class'=>'btn btn-primary'])}}
+         {!! Form::close() !!} 
+@endsection
+
+
+13 a) depts/  index.blade.php (display before departure requests)
+@extends('layouts.app')
+@section('content')
+<!DOCTYPE html>
+<html>
+<body>
+    <h1> Aircraft Before Departure Requests</h1>
+    <br>   
+    @if(count($depts) > 0)        
+             <table class="table table-striped table-bordered table-sm">
+                <tr>
+                    <th><h3 style="color:red;">Flight number</h3></th>
+                    <th><h3 style="color:green;">Plane Outer inspection </h3></th> 
+                    <th><h3 style="color:purple;">Supplies and Inventory Check</h3></th>
+                    <th><h3>Catering Service</h3></th>
+                    <th><h3 style="color:blue;">Deicing</h3></th>
+                </tr>
+                @foreach($depts as $dept)
+                @if($dept->cleaning == null)
+                <tr>
+                        
+                            <td><h3 style="color:red;">{{$dept->dflightno}} </h3></td> 
+                            {{-- <td><h3><a href="/dposts/{{$dpost->id}}">{{$dept->dflightno}}</a></h3></td> --}}
+                            <td colspan="4"><h3 style="color:green;"><a href="depts/{{$dept->id}}/edit" class="btn btn-primary btn-lg btn-block">Create</a></h3></td>
+                            <td colspan="4"> 
+                @endif
+                @if($dept->cleaning != null)
+                    <tr>
+                        <td><h3 style="color:red;">{{$dept->dflightno}} </h3></td>
+                        <td><h3 style="color:green;">{!!$dept->cleaning!!}</h3></td>
+                        <td><h3 style="color:purple;">{!!$dept->rampservice!!}</h3></td>
+                        <td><h3>{!!$dept->waste!!}</h3></td>
+                        <td><h3 style="color:blue;">{!!$dept->deicing!!}</h3></td> 
+                    </tr>
+                    @endif
+                {{-- @endforeach --}}
+                @endforeach
+            </table> 
+    @else
+        <p>No Records Found</p>
+    @endif
+  </body>
+  </html>
+@endsection
+
+
+Resources Assets 
+3) app.scss 
+// Fonts
+@import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
+// Variables
+@import "variables";
+// Bootstrap
+@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+// Custom CSS
+@import "custom";
+
+
+Controllers
+3) PostsController.php (controlling main pages of app)
+<?php
+namespace App\Http\Controllers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Post;
+use DB;
+use App\Arrival;
+class PostsController extends Controller
+{    /**
+     * Create a new controller instance.
+     * @return void
+     */
+     protected $post, $arrival;
+    public function __construct()
+    {   $this->middleware('auth', ['except' => ['index', 'show']]);
+        $this->post = new Post();
+        $this->arrival = new Arrival();
+    }
+    /**
+     * Display a listing of the resource.
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {        $posts = Post::orderBy('created_at','desc')->paginate(10);
+        return view('posts.index')->with('posts', $posts);
+    }
+    /**
+     * Show the form for creating a new resource.
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {        return view('posts.create');
+    }
+    /**
+     * Store a newly created resource in storage.
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {       $this->validate($request, [
+            'flightno'=> 'required|regex:(^[A-Z]{1,3}[0-9]{1,4}+$)|unique:posts|min:4|max:7',       
+            'flighttype'=> 'required',
+            'toa'=> 'required',
+            'doa'=> 'required',
+            'runway'=> 'required',
+            'route'=> 'required',
+            'parking'=> 'required'
+        ]);        
+        // Create Post
+        $post = new Post;
+        $post->flightno = $request->input('flightno');
+        $post->flighttype = $request->input('flighttype');
+        $post->toa = $request->input('toa');
+        $post->doa = $request->input('doa');
+        $post->runway = $request->input('runway');
+        $post->route = $request->input('route');
+        $post->parking = $request->input('parking');
+        $post->user_id = auth()->user()->id;
+        $post->save();
+        $arrival = new Arrival;
+        $arrival->aflightno = $post->flightno;
+        $arrival->save();
+        return redirect('/posts')->with('success', 'Record Created');
+        /* if($post && $arrival){
+            DB::commit();
+        }else{
+            DB::rollback();
+            return redirect('/posts')->with('success', 'Record Created');
+        }
+            return redirect('/posts')->with('success', 'Record Created');
+    }
+    catch(Exception $ex){
+        DB::rollback();
+        return redirect('/posts')->with('success', 'Record Created');
+    } */
+    }
+    /**
+     * Display the specified resource.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {      $post = Post::find($id);
+        return view('posts.show')->with('post', $post);
+    }
+    /**
+     * Show the form for editing the specified resource.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {        $post = Post::find($id);
+        // Check for correct user
+        if(auth()->user()->id !==$post->user_id){
+            return redirect('/posts')->with('error', 'Unauthorized Page');
+        }
+        return view('posts.edit')->with('post', $post);
+    }
+    /**
+     * Update the specified resource in storage.
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {        $this->validate($request, [
+            'flightno'=> 'required',
+            'flighttype'=> 'required',
+            'toa'=> 'required',
+            'doa'=> 'required',
+            'runway'=> 'required',
+            'route'=> 'required',
+            'parking'=> 'required'
+        ]); 
+        // Edit Post
+        $post = Post::find($id);
+        $post->flightno = $request->input('flightno');
+        $post->flighttype = $request->input('flighttype');
+        $post->toa = $request->input('toa');
+        $post->doa = $request->input('doa');
+        $post->runway = $request->input('runway');
+        $post->route = $request->input('route');
+        $post->parking = $request->input('parking');        
+        $post->save();
+        return redirect('/posts')->with('success', 'Record Updated');
+    }
+    /*     * Remove the specified resource from storage.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {        $post = Post::find($id);
+        // Check for correct user
+        if(auth()->user()->id !==$post->user_id){
+            return redirect('/posts')->with('error', 'Unauthorized Page');
+        } 
+        $post->delete();
+        return redirect('/posts')->with('success', 'Record Removed');
+    }
+}
+
+Routes 
+1) web.php (web routes for application)
+<?php
+Route::get('/', 'PagesController@index');
+Route::get('/about', 'PagesController@about');
+Route::get('/help', 'PagesController@help');
+Route::resource('/posts', 'PostsController');
+Route::resource('/dposts', 'DpostsController');
+Route::resource('/arrivals', 'ArrivalsController');
+Route::resource('/depts', 'DeptsController');
+Auth::routes();
+Route::get('/dashboard', 'DashboardController@index');
+
+Config 
+1) database.php (database connections)
+<?php
+return [
+    'default' => env('DB_CONNECTION', 'mysql'),
+    'connections' => [
+        'mysql' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+];
+
+Database - Migrations
+1) Create users table 
+<?php
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+class CreateUsersTable extends Migration
+{    /** Run the migrations.
+     * @return void
+     */
+    public function up()
+    {     Schema::create('users', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
+    /*   Reverse the migrations.
+     * @return void
+     */
+    public function down()
+    {       Schema::dropIfExists('users');
+    }
+}
+
+2) Create posts (arrival clearance records) table 
+<?php
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+class CreatePostsTable extends Migration
+{    /** Run the migrations.
+     * @return void
+     */
+    public function up()
+    {     Schema::create('posts', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('flightno', 7)->index();
+            $table->string('flighttype');
+            $table->string('toa');
+            $table->string('doa');
+            $table->string('runway');
+            $table->string('route');
+            $table->string('parking');
+            $table->timestamps();
+        });
+    }
+    /** Reverse the migrations.
+     * @return void
+     */
+    public function down()
+    {        Schema::dropIfExists('posts');
+    }
+}
+
+3) Create arrivals (ground requests on arrival) table 
+<?php
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+class CreateArrivalsTable extends Migration
+{    /** Run the migrations.
+     * @return void
+     */
+    public function up()
+    {     Schema::create('arrivals', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('Security_Code')->nullable();
+            $table->string('aflightno', 7);
+            $table->string('cleaning')->nullable();
+            $table->string('rampservice')->nullable();
+            $table->string('waste')->nullable();
+            $table->string('deicing')->nullable();
+            $table->foreign('aflightno')
+                    ->references('flightno')->on('posts')->onUpdate('cascade')
+                    ->onDelete('cascade');
+            $table->timestamps();
+        }); 
+    /** Reverse the migrations.
+     * @return void
+     */
+    public function down()
+    {        Schema::dropIfExists('arrivals');
+    }
+}
+
+App - Model
+1) user.php (User model) 
+<?php
+namespace App;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+class User extends Authenticatable
+{    use Notifiable;
+    /**
+     * The attributes that are mass assignable
+     * @var array
+     */
+    protected $fillable = [
+        'name', 'email', 'password',
+    ];
+    /** The attributes that should be hidden for arrays.
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+    public function posts(){
+        return $this->hasMany('App\Post');
+    }}
